@@ -1,11 +1,16 @@
 steps:
   # Build the Docker image from the Dockerfile in the repository
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/bookshop-420721/github.com/manuelalvizo/api-security:$COMMIT_SHA', '.']
+    args: ['build', '-t', 'gcr.io/bookshop-420721/api-security:$COMMIT_SHA', '.']
 
   # Push the built Docker image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/bookshop-420721/github.com/manuelalvizo/api-security:$COMMIT_SHA']
+    args: ['push', 'gcr.io/bookshop-420721/api-security:$COMMIT_SHA']
+
+  # Deploy the Docker image to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['run', 'deploy', 'api-security', '--image', 'gcr.io/bookshop-420721/api-security:$COMMIT_SHA', '--platform', 'managed', '--region', 'us-central']
+    #dir: 'path/to/your/service/directory'  # Optional, if your Dockerfile is not in the root directory
 
 options:
   logging: NONE
