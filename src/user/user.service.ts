@@ -11,13 +11,24 @@ export class UserService {
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
-  async findAll() {
+  async findAll(page: number, limit: number) {
+    let users;
+    let totalElements;
+    const skip = (page - 1) * limit;
     try{
-      const usuarios = await this.userModel.find({}, '-__v -_id -password');
-      return usuarios;
+      const [resultList, totalList] = await Promise.all([
+        this.userModel.find({},  '-__v -_id -password').skip(skip).limit(limit), // Lista paginada
+        this.userModel.countDocuments() // Total de elementos
+      ]);
+      users = resultList;
+      totalElements = totalList; // 
     } catch (error) {
       throw new HttpException('Ocurrió un error al obtener los usuarios',HttpStatus.CONFLICT);
     }
+    if (users.length === 0) {
+      throw new HttpException('No se encontraron elementos', HttpStatus.NOT_FOUND);
+    }
+    return { users, totalElements };
   }
 
   async findOne(id: string) {
