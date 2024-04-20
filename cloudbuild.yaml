@@ -13,4 +13,4 @@ steps:
     #dir: 'path/to/your/service/directory'  # Optional, if your Dockerfile is not in the root directory
 
 options:
-  logging: NONE
+  logging: CLOUD_LOGGING
