@@ -12,7 +12,6 @@ RUN apk add --no-cache make gcc g++ python3 && \
 
 COPY . .
 
-
 RUN npm run build
 
 EXPOSE 8080
