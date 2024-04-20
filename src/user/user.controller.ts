@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query
 } from '@nestjs/common';
 
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { QueryDto } from './dto/query.dto';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -22,8 +24,9 @@ export class UsersController {
 
   @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() queryDto: QueryDto) {
+    const { page, limit } = queryDto; // Obtén la página y el límite de la consulta
+    return this.usersService.findAll(page, limit);
   }
 
   @UseGuards(AuthGuard)
