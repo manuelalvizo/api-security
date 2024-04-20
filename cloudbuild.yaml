@@ -7,10 +7,14 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/bookshop-420721/app-security:$COMMIT_SHA']
 
-  # Deploy the Docker image to Cloud Run
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['run', 'deploy', 'app-security', '--image', 'gcr.io/bookshop-420721/app-security:$COMMIT_SHA', '--platform', 'managed', '--region', 'us-central']
-    #dir: 'path/to/your/service/directory'  # Optional, if your Dockerfile is not in the root directory
+  # Implementa la imagen en Cloud Run de Google (nuevo paso)
+  - name: 'gcloud'
+    args: ['run', 'deploy', 'app-security',
+           '--image', 'gcr.io/bookshop-420721/app-security:$COMMIT_SHA',
+           '--platform', 'managed',  # Garantiza un entorno de ejecución administrado
+           '--project', 'bookshop-420721',  # Reemplaza con tu ID de proyecto
+           '--region', 'us-central1',        # Opcional: Especifica la región de implementación
+          ]
 
 options:
   logging: CLOUD_LOGGING_ONLY
