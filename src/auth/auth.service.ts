@@ -17,10 +17,13 @@ export class AuthService {
   ){}
 
   async register(userObject: RegisterAuthDto) {
-    const { password } = userObject;
+    const { password, ...userDataWithoutPassword } = userObject;
     const plainToHash = await hash(password, 10);
-    userObject = {...userObject, password:plainToHash};
-    return this.userModel.create(userObject);
+    const userWithHashedPassword = { ...userDataWithoutPassword, password: plainToHash };
+    const createdUser = await this.userModel.create(userWithHashedPassword);
+    // Eliminar la contraseña del usuario creado antes de devolverlo
+    const { password: _, ...userWithoutPassword } = createdUser.toJSON();
+    return userWithoutPassword;
   }
 
   async login(userLogin: LoginAuthDto) {
