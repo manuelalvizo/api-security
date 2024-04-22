@@ -53,6 +53,7 @@ export class AuthService {
       id: findUser._id,
       name: findUser.name,
       roles: findUser.roles,
+      email: findUser.email,
     };
   
     const token = await this.jwtService.sign(sanitizedUser);

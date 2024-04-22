@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEmail, MaxLength, MinLength } from 'class-validator';
+import { IsArray, IsEmail, MaxLength, MinLength, ArrayMinSize  } from 'class-validator';
 
 export class RegisterAuthDto {
 
@@ -19,6 +19,7 @@ export class RegisterAuthDto {
 
   @ApiProperty({ description: 'Roles de acceso del usuario'})
   @IsArray()
+  @ArrayMinSize(1, { message: 'Debe tener al menos un rol' })
   roles: string[];
 
 }

@@ -9,6 +9,9 @@ export class UserDto {
   
     @ApiProperty()
     name: string;
+
+    @ApiProperty()
+    email: string;
   
     @ApiProperty()
     roles: string[];
