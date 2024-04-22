@@ -17,13 +17,27 @@ export class AuthService {
   ){}
 
   async register(userObject: RegisterAuthDto) {
-    const { password, ...userDataWithoutPassword } = userObject;
-    const plainToHash = await hash(password, 10);
-    const userWithHashedPassword = { ...userDataWithoutPassword, password: plainToHash };
-    const createdUser = await this.userModel.create(userWithHashedPassword);
-    // Eliminar la contraseña del usuario creado antes de devolverlo
-    const { password: _, ...userWithoutPassword } = createdUser.toJSON();
-    return userWithoutPassword;
+    try{
+      const { password, ...userDataWithoutPassword } = userObject;
+      const plainToHash = await hash(password, 10);
+      const userWithHashedPassword = { ...userDataWithoutPassword, password: plainToHash };
+      const createdUser = await this.userModel.create(userWithHashedPassword);
+      // Eliminar la contraseña del usuario creado antes de devolverlo
+      const { password: _, ...userWithoutPassword } = createdUser.toJSON();
+      return userWithoutPassword;
+    }catch (error) {
+      if (error.code === 11000) {
+        throw new HttpException(
+          'Ya existe un usuario con ese correo, verificar información',
+          HttpStatus.CONFLICT
+        );
+      }
+      throw new HttpException(
+        'Ocurrió un error al registrar el usuario',
+        HttpStatus.CONFLICT
+      );
+    }
+    
   }
 
   async login(userLogin: LoginAuthDto) {
