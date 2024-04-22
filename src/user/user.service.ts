@@ -46,13 +46,10 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
+    let updatedUser
     try {
-      const updatedUser = await this.userModel.findOneAndUpdate({ id }, updateUserDto, { new: true });
-      if (!updatedUser) {
-        throw new HttpException('El usuario no se encontró', HttpStatus.NOT_FOUND);
-      }
-      const { password, _id, ...userWithoutPasswordAndId } = updatedUser.toObject();
-      return userWithoutPasswordAndId;
+      updatedUser = await this.userModel.findOneAndUpdate({ id }, updateUserDto, { new: true });
+
     } catch (error) {
       if (error.code === 11000 && error.keyPattern && error.keyPattern.title) {
         throw new HttpException(
@@ -65,16 +62,24 @@ export class UserService {
         HttpStatus.CONFLICT
       );
     }
+
+    if (!updatedUser) {
+      throw new HttpException('El usuario no se encontró', HttpStatus.NOT_FOUND);
+    }
+    const { password, _id, ...userWithoutPasswordAndId } = updatedUser.toObject();
+    return userWithoutPasswordAndId;
   }
 
   async remove(id: string) {
+    let deletedUser;
     try {
-      const deletedUser = await this.userModel.findOneAndDelete({ id });
-      if (!deletedUser) {
-        throw new HttpException('El usuario que se intento eliminar, no existe', HttpStatus.NOT_FOUND);
-      }
+      deletedUser = await this.userModel.findOneAndDelete({ id });
+
     } catch (error) {
       throw new HttpException('Ocurrió un error al eliminar el usuario',HttpStatus.CONFLICT);
+    }
+    if (!deletedUser) {
+      throw new HttpException('El usuario que se intento eliminar, no existe', HttpStatus.NOT_FOUND);
     }
   }
 }
